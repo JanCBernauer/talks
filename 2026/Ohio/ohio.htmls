@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <title>Tales from the precision frontier</title>
+
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="reveal.css" />
+  <link rel="stylesheet" href="black.css" />
+
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href="monokai.css" />
+  <link rel="stylesheet" href="mystyle.css" />
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <!-- ******************** TITLE SLIDE ********************** -->
+      <section data-hide-slide-number="true" data-background-image="images/clouds.png"
+        data-transition="zoom">
+        <h1 style="text-shadow: 5px 5px 10px black; margin-top:200px">
+          Tales from the Precision Frontier
+        </h1>
+        <h2 style="text-shadow: 5px 5px 10px black;">Jan C. Bernauer</h2>
+        <h2 style="text-shadow: 5px 5px 10px black;">INPP Seminar, Ohio University</h2>
+        <div style="margin-bottom: 100px">February 10th, 2026</div>
+        <center>
+          <img style="height: 250px; vertical-align: -100px; margin-right: 100px"
+            src="images/cfns_logo_2018.png" />
+          <img style="height: 300px; vertical-align: -150px; margin-right: 100px"
+            src="images/SBUlogo.png" />
+        </center>
+
+        <div class="support">
+          Work partially supported by NSF PHY-2012114+2412703 and DOE-SC0024464.
+        </div>
+      </section>
+
+      <!-- ******************** TOC ********************** -->
+
+      <section data-transition="zoom-in zoomleft-out" data-background-image="images/clouds.png">
+        <h1>Precision lepton scattering: Topics today</h1>
+        <div class="columns">
+          <div class="column puzzle" data-id="zb1">
+            <h2 data-id="head">Proton radius puzzle<br />&nbsp;</h2>
+            <h3>How big is the proton?</h3>
+
+            <img style="width: 50%" src="images/proton/muse_logo_dark.png" />
+            <img style="width: 85%" src="images/proton/muse_overview.png" />
+          </div>
+          <div class="column dm">
+            <h2>
+              Beyond the<br />
+              Standard Model
+            </h2>
+            <h3>Is there an X17?</h3>
+            <img src="images/dl/DarkLightLogo_framed.png" />
+            <img style="width: 75%" src="images/dl/experiment-only.png" />
+          </div>
+
+          <div class="column sro">
+            <h2>Streaming Readout<br />&nbsp;</h2>
+            <h3>How can we make experiments better?</h3>
+            <img style="width: 54%" src="images/sro/sPHENIXlogo.png" />
+            <img style="width: 40%; vertical-align: top" src="images/sro/epiclogo.png" /><br />
+
+            <img style="margin-top: 150px" src="images/sro/daqoverview.png" />
+          </div>
+        </div>
+      </section>
+ <!-- ******************** Why proton so important ********************** -->
+      <section data-background-image="images/puzzle.jpg">
+        <h1>Why do we want to know the shape of the proton?</h1>
+
+        <p>Non-perturbative Quantum Chromodynamics is hard.</p>
+        <p>
+          Simplest,<span class="stress"> stable </span> npQCD system is the
+          proton.
+        </p>
+
+        <img src="images/proton/protoninside.png" />
+        <p>
+          Emergent properties are <span class="stress"> touchstones</span> for
+          npQCD theory.
+        </p>
+        <p class="fragment">
+          The <span class="sstress">radius</span> is a
+          <it>nuisance</it> parameter for QED tests.
+        </p>
+      </section>
+
+<!-- ******************** Radius from slope ********************** -->
+      <section data-background-image="images/puzzle.jpg">
+        <h1>Two and a half ways to measure the Proton Radius</h1>
+        
+        <div class="columns">
+          <div class="column">
+            <h2>Electron scattering</h2>
+            <h3>Measure the cross section</h3>            
+            $\left<r^2_{E/M}\right>\propto-\left.\frac{dG_{E/M}(Q^2)}{dQ^2}\right|_{Q^2=0}$    
+            <img style="width: 70%; margin-top: 40px" src="images/proton/dsa_2.jpg" />
+          </div>
+          <div class="column">
+            <h2>Hydrogen spectroscopy</h2>
+            <h3>Measure the Lamb Shift</h3>
+            <img style="width: 100%; margin-top: 40px" src="images/proton/lambshift.png" />
+          </div>
+
+          <div class="column fragment" style="width: 30vh; flex: 0.5">
+            <h2>Do this</h2>
+            <span style="font-size: 200px">&#x21C7;</span>
+            <h2>with muons!</h2>
+            <p>$\sim 200$ $\times$ heavier</p>
+            <p style="font-size: 100px">&#x21ca;</p>
+            <p>$\sim 8,000,000$ $\times$ larger effect</p>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ******************** Rosenbluth ********************** 
+      <section data-background-image="images/puzzle.jpg">
+        <h1>
+          Rosenbluth Formula for
+          <span style="font-size: 60px">$e^-p$</span> Scattering
+        </h1>
+        <div style="margin-top: 40px; font-size: 100px">
+          <span>$(\frac{d\sigma}{d\Omega})$</span>$=$<span>$(\frac{d\sigma}{d\Omega})_\textrm{Mott}$</span>$\frac{\varepsilon
+          G_E(Q^2)+\tau G_M(Q^2)}{\varepsilon (1+\tau)}$<span></span>
+        </div>
+        <div>
+          <div style="font-size: 150px">
+            <span style="margin-right: 200px">&#129093;</span><span style="margin-right: 550px">&#129093;</span><span
+              style="margin-right: 250px">&#129093;</span>
+          </div>
+          <div>
+            <span style="margin-right: 70px">Cross Section</span><span style="margin-right: 420px">Mott Cross
+              Section</span><span style="margin-right: 250px">Form Factors</span>
+          </div>
+        </div>
+        <div class="fragment" style="margin-top: 30px; color: orange; font-size: 70px">
+          <span style="width: 300px; display: inline-block; margin-right: 50px">What we measure!</span><span
+            style="color: white; margin-right: 350px; vertical-align: top">boring math</span><span
+            style="margin-right: 250px; width: 300px; display: inline-block">What we want!</span>
+        </div>
+        <div style="text-align: left; margin-left: 200px; margin-top: 150px">
+          $Q^2 \sim \tau$<span style="margin-left: 30px" />
+          Four-Momentum-Transfer: How hard we hit (&#129093; energy, &#129093;
+          scattering angle)
+          <br />
+          <span style="margin-left: 60px" />$\varepsilon$
+          <span style="margin-left: 100px" /> Scattering angle (1 is forward,
+          0 is backward)
+        </div>
+      </section>
+    -->
+
+      
+      
+
+      <!-- ******************** The puzzle ********************** -->
+      <section data-background-image="images/puzzle.jpg">
+        <h1>The Puzzle, ca. 2013</h1>
+
+        <div class="imagestack">
+          <img style="width: 100%; margin-top: 40px" src="images/proton/propaganda/puzzleprop.png" />
+
+          <img class="stacked" style="left: 520px; top: 420px; width: 27%"
+            src="images/proton/propaganda/news.png" />
+        </div>
+      </section>
+
+      <!-- ******************** 1000 ships ********************** -->
+      <section data-background-image="images/puzzle.jpg">
+        <h1>
+          The <del>Face</del> Puzzle that launched a thousand
+          <del>Ships</del> Experiments
+        </h1>
+
+        <div style="float: left">
+          <img style="width: 40%; margin-top: 40px" src="images/proton/Helen_of_Troy.jpg" />
+        </div>
+        <div style="text-align: left; margin-top: 60px">
+          <h2>Spetroscopy</h2>
+          <ul>
+            <li>MPQ</li>
+            <li>York U.</li>
+            <li>Paris</li>
+            <li>Mainz</li>
+            <li>+ measurements on $d$, $^3He$, $^4He$</li>
+          </ul>
+          <h2 style="margin-top: 50px">Scattering</h2>
+          <ul>
+            <li>PRad / PRad-II</li>
+            <li>ULQ2@ELPH</li>
+
+            <li><span class="me">Mainz: ISR, next-gen FF,</span> H-TPC</li>
+            <li><span class="me">AMBER@CERN</span></li>
+            <li><span class="me">MUSE@PSI</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ******************** Results so far ********************** -->
+      <section data-background-image="images/puzzle.jpg">
+        <h1>Results so far</h1>
+        <div class="r-stack">
+          <img class="fragment fade-out" style="transition-duration:0s" data-fragment-index="0"
+            src="images/proton/results/radii1.png" />
+          <img class="fragment current-visible" data-fragment-index="0"
+            src="images/proton/results/radii2.png" />
+          <img class="fragment current-visible" data-fragment-index="1"
+            src="images/proton/results/radii3.png" />
+          <img class="fragment current-visible" data-fragment-index="2"
+            src="images/proton/results/radii4.png" />
+          <img class="fragment current-visible" data-fragment-index="3"
+            src="images/proton/results/radii5.png" />
+          <img class="fragment current-visible" data-fragment-index="4"
+            src="images/proton/results/radii6.png" />
+          <img class="fragment" style="transition-duration:0s" src="images/proton/results/radii7.png" />
+        </div>
+      </section>
+      <!-- ******************** MUSE ********************** -->
+      <section data-background-image="images/puzzle.jpg">
+        <h1>The Muon Scattering Experiment MUSE at PSI</h1>
+        <img src="images/proton/psi.png" />
+
+        <h2>
+            <video  autoplay loop muted playsinline disablePictureInPicture preload="none" style="filter:invert(1);height:150px;vertical-align:middle;">
+          <source src="images/proton/psilogo.webm" type="video/webm" />
+          
+        </video>PSI: World's most powerful low-energy $e/\pi/\mu$-beam</h2>
+        <p class="sstress">
+          MUSE: First high-precision form factors + radius determination with
+          muon scattering.
+        </p>
+      </section>
+
+      <section data-background-image="images/puzzle.jpg">
+      
+          <h1>MUSE Setup and Physics Goals</h1>
+
+          <div style="float: left; max-width: 60%">
+            <img style="width: 1000px" src="images/proton/muse_overview.png" />
+          </div>
+          <div style="margin-top: 100px">
+            <h2>Measure</h2>
+            <ul style="width: 35%">
+              <li>
+                $e p$, $\mu p$ and $\pi p$ scattering with the
+                <span class="stress">same apparatus at the same time</span>
+              </li>
+              <li>Both charges</li>
+            </ul>
+
+            <p style="font-size: 70px">&#x21ca; &#x21ca; &#x21ca; &#x21ca;</p>
+            <h2>Test/Extract</h2>
+            <ul style="width: 35%">
+              <li>$r_E$ from $ep$ and $\mu p$ scattering</li>
+              <li>Lepton universality</li>
+              <li>Radiative corrections</li>
+              <li>Two-photon exchange</li>
+              <li>Unique $\pi$ data set</li>
+            </ul>
+          </div>
+        
+
+      </section>
+
+  <section data-background-image="images/puzzle.jpg">
+          <h1>MUSE is in the air</h1>
+          <img style="width:70%" src="images/proton/muse_fly.jpg" />
+        </section>
+
+      
+
+ 
+      
+      <!-- ******************** Timeline ********************** -->
+
+      <section data-background-image="images/puzzle.jpg">
+        <h1>MUSE Status</h1>
+
+        <ul class="morespace" style="margin-top:200px;">
+          <li class="stress">Production data taking completed!</li>
+          <li>Will take additional systematics check data in summer 2026</li>
+          <li>
+            <span class="stress"> Blinded </span> analysis with staggered
+            release in the years after:
+            <ol>
+              <li>Pion data</li>
+              <li>Ratios (TPE + Lepton universality)</li>
+              <li>Radii</li>
+            </ol>
+          </li>
+        </ul>
+      </section>
+
+
+     
+
+       <!-- ******************** Blinding ********************** -->
+
+      <section data-background-image="images/puzzle.jpg">
+        <h1>MUSE Blinding</h1>
+
+        <h2 style="text-align:left"> Thread model</h2>
+        We do NOT want to fight malicious actors. We do want:<br/>
+         <ul class="morespace">
+          <li> Stop <hl>accidental</hl> physics releases</li>
+          <li> Blind ourselves to <hl>mitigate analyzer bias</hl></li>
+         </ul>
+         <div class="fragment">
+        <h2  style="text-align:left"> Approach</h2>
+          <ul >
+            <li> Our code and data is accessible to everyone in the collaboration</li>
+            <li> Slowest analysis step: Tracking</li>
+            <li> Blinding applied to tracking output</li>            
+          </ul>
+          </div>
+          <div class="fragment">
+          <hl> Select tracks probabilistically and encrypt.</hl><br/>
+          Selection function depends on:<br/>
+          <ul >
+            <li>Track angle</li>
+            <li>Particle Species</li>
+            <li>Data or MC</li>
+          </ul>
+          <br/>
+          <span class="stress">Can decrypt/unblind individually </span>
+          </div>
+        
+      </section>
+     
+            <!-- ******************** PRAD ********************** -->
+ <section data-background-image="images/puzzle.jpg">
+        <h1>PRad</h1>        
+        <img style="width: 100%" src="images/proton/pradsetup.webp" />
+        <div class="Cite">
+        From: Xiong, W., et al. Nature 575, 147–150 (2019). doi:10.1038
+        </div>
+      </section>
+
+<section data-background-image="images/puzzle.jpg">
+        <h1>PRad results</h1>        
+<div class="r-stack">
+    <img class="fragment fade-out" style="transition-duration:0s" data-fragment-index="0"
+src="images/proton/prad/pradres1.png" />
+     <img class="fragment current-visible" data-fragment-index="0"
+          src="images/proton/prad/pradres2.png" />
+    <img class="fragment" data-fragment-index="1"
+          src="images/proton/prad/pradres3.png" />
+        
+</div>
+</section>
+
+
+ <!-- ******************** What else MUSE can do ********************** -->
+        <section data-background-image="images/puzzle.jpg">
+        <h1>PRad vs Mainz: MUSE will decide</h1>        
+        <img style="width: 100%" src="images/proton/comp.png" />
+      </section>
+
+      <!-- ******************** Cornering ********************** -->
+      <section data-background-image="images/puzzle.jpg">
+        
+          <h1>We will corner the puzzle from all sides</h1>
+          <ul>
+            <li>
+              MUSE: small E, large $\theta$, $e^+$, $e^-$, $\mu^+$, $\mu^-$
+            </li>
+            <li>ULQ2: small E, large $\theta$, $e^-$, CH<sub>2</sub> target</li>
+            <li>Mainz: small E, large $\theta$, $e^-$, jet target</li>
+            <li>PRad2: large E, small $\theta$, $e^-$</li>
+            <li>AMBER: large E, small $\theta$, $\mu^+,\mu^-$, $p$ measured</li>
+          </ul>
+          <br />
+          <img style="width: 80%" src="images/proton/results/radii8.png" />
+        
+       
+      </section>
+
+ <section data-background-image="images/puzzle.jpg">
+          <h1>Mainz jet target</h1>
+          <p>Gas-Jet target: pure hydrogen target, point-like. Eliminate major background</p>
+          <p>Designed for MAGIX, but run at A1 as a prototype exp.</p>
+          <img style="width: 50%" src="images/proton/target1.png" />
+          <img style="width: 30%" src="images/proton/target2.png" />
+        </section>
+      <section data-background-image="images/puzzle.jpg">
+          <h1>Mainz jet target test run</h1>
+
+          <p>Scope limited by COVID.</p>
+          <img style="width: 50%" src="images/proton/form_factor.png" />
+
+        </section>
+      <!-- ******************** Open questions ********************** -->
+      <section data-background-image="images/puzzle.jpg" data-transition="unzoomleft-out">
+        
+          <h1 style="margin-bottom:100px">Proton Form Factors: Open Questions</h1>
+          <div class="columnsf">
+
+            <div class="column">
+              <h2>Magnetic and Zemach radius</h2>
+              <ul class="morespace" style="margin:80px">
+                <li> Current data not sensitive to $G_M$ in relevant $Q^2$ range</li>
+                <li> Additional connection to spectroscopy!</li>
+              </ul>
+            </div>
+            <div class="column">
+              <h2>Two-photon exchange at large $Q^2$?</h2>
+              <ul class="morespace" style="margin:80px">
+                <li> We observe a discrepancy for $G_E/G_M$ from two techniques</li>
+                <li> Supposed resolution: TPE</li>
+                <li> Theory does not agree with measurements!</li>
+
+              </ul>
+            </div>
+          </div>
+
+          <p class="sstress" style="margin-top:100px">            
+          </p>
+        
+        
+      </section>
+<section data-background-image="images/puzzle.jpg">
+          <h1>What do we know about $G_M$?</h1>
+          <img style="width: 75%" src="images/proton/wwk_gegm.png" />
+        </section>
+        <section data-background-image="images/puzzle.jpg">
+          <h1>The form factor ratio puzzle</h1>
+          <img style="width: 75%" src="images/proton/ratio.png" />
+        </section>
+        <section data-background-image="images/puzzle.jpg">
+          <h1>OLYMPUS result</h1>
+          <img style="width: 75%" src="images/proton/r2gamma_1mot.png" />
+        </section>
+
+      <!-- ******************** TOC again ********************** -->
+
+      <section data-transition="unzoomleft-in zoom-out" data-background-image="images/clouds.png">
+        <h1>Tales from the precision frontier</h1>
+        <div class="columns">
+          <div class="column puzzle" data-id="zb1">
+            <h2 data-id="head">Proton radius puzzle<br />&nbsp;</h2>
+            <h3>How big is the proton?</h3>
+
+            <img style="width: 50%" src="images/proton/muse_logo_dark.png" />
+            <img style="width: 85%" src="images/proton/muse_overview.png" />
+          </div>
+          <div class="column dm">
+            <h2>
+              Beyond the<br />
+              Standard Model
+            </h2>
+            <h3>Is there an X17?</h3>
+            <img src="images/dl/DarkLightLogo_framed.png" />
+            <img style="width: 75%" src="images/dl/experiment-only.png" />
+          </div>
+
+          <div class="column sro">
+            <h2>Streaming Readout<br />&nbsp;</h2>
+            <h3>How can we make experiments better?</h3>
+            <img style="width: 54%" src="images/sro/sPHENIXlogo.png" />
+            <img style="width: 40%; vertical-align: top" src="images/sro/epiclogo.png" /><br />
+
+            <img style="margin-top: 150px" src="images/sro/daqoverview.png" />
+          </div>
+        </div>
+      </section>
+
+      <!-- ******************** Atomki ********************** -->
+      <section data-transition="zoom-in " data-background-image="images/sparks.jpg">
+        <h1>The Standard Model is just a sliver</h1>
+        <img src="images/dl/sliver.png" />
+        <div style="text-align:left;margin-left:200px;font-size:130%">
+          <p><span class="stress"> Simple</span> models &rarr; Large phase space
+            &rarr; Broad searches</p>
+          <p><span class="stress"> Complex</span> models &rarr; Endless phase space &rarr; <span
+              class="stress">Guided</span> searches</p>
+        </div>
+      </section>
+      <section data-background-image="images/sparks.jpg">
+
+        <h1>The ATOMKI experiment</h1>
+        <img src="images/dl/atomki/atomki.png" />
+        <div class="src">
+          (modified image from arXiv:1707.09749v1 / Int. J. Mod. Phys. A 32 (2017) 1730020)
+        </div>
+      </section>
+      
+        <section data-background-image="images/sparks.jpg">
+      
+          <h1>The ATOMKI $^8$Be anomaly</h1>
+          <img src="images/dl/atomki/atomkianomaly.png" />
+          <div class="src">
+            (modified image from arXiv:1707.09749v1 / Int. J. Mod. Phys. A 32 (2017) 1730020)
+          </div>
+      
+      </section>
+
+      <section data-background-image="images/sparks.jpg">
+        <h1>Can this be BSM physics?</h1>
+
+        <p style="margin-top:100px">Default answer: <span class="sstress">No!</span> - phase space ruled out.</p>
+        <div class="fragment" style="margin-top:100px">
+          <div style="float: left;height: 360px; overflow-y: hidden">
+            <video autoplay loop style="
+                position: relative;                
+                max-width: 300%;
+                max-height: 300%;
+                height:400px;                
+              " controls>
+              <source src="images/dl/columbo.webm" type="video/webm" />
+            </video>
+          </div>
+          <div>
+            <p class="sstress">However</p>
+            <p>Feng et al. (PRL 117, 071803 (2016))</p>
+            <p class="sstress">Proto-phobic force can evade current limits.</p>
+            <p>New, dark sector force carrier:</p>
+            <p class="stress" style="font-size:200px">X17</p>
+          </div>
+        </div>
+
+
+      </section>
+      <!-- ******************** More evidence   ********************** -->
+      <section data-background-image="images/sparks.jpg">
+        <h1>More evidence</h1>
+
+
+        <div class="columns">
+          <div class="column">
+            <h2>ATOMKI <br />&nbsp;</h2>
+            <p>Signal persists for updated detector</p>
+            <p style="margin-bottom:0px"> Also seen in $^4$He, $^{12}$C, <br /> giant dipole resonance of $^8$Be</p>
+            <img style="width:90%" src="images/dl/atomki/atomkinew.png" />
+            <div style="font-size:20px">(modified image from arXiv:2308.06473v1)</div>
+
+
+
+          </div>
+          <div class="fragment column">
+            <h2> Muon g-2 <br />&nbsp;</h2>
+            <p>Long-standing discrepancy between theory and experiment.
+            </p>
+            <p>Probably resolved by Lattice-QCD</p>
+
+            <img src="images/dl/mug2.png" />
+            <div style="font-size:20px">(modified image from Phys. Rev. Lett. 126, 141801 (2021))</div>
+          </div>
+          <div class="fragment column">
+            <h2> Isotope shifts <br /> King plots</h2>
+            Non-linearity hint for additional nuclear interaction
+            <img style="margin-top:80px" src="images/dl/king.png" />
+            <div style="font-size:20px">(modified image from Phys. Rev. Lett. 125, 123002 (2020))</div>
+          </div>
+        </div>
+
+
+      </section>
+      <!-- ******************** A broken analogue ********************** -->
+      <section data-background-image="images/sparks.jpg">
+        <h1>We may produce it in Lepton Scattering</h1>
+
+        <div class="r-stack">
+          <img class="fragment fade-out" style="transition-duration:0s" data-fragment-index="0"
+            src="images/dl/reaction/reaction0.png" />
+          <img class="fragment current-visible" data-fragment-index="0"
+            src="images/dl/reaction/reaction1.png" />
+
+          <img class="fragment" style="transition-duration:0s" src="images/dl/reaction/reaction2.png" />
+        </div>
+        <img style="width:800px;position:absolute; top:600px;right:50px;" class="fragment" src="images/dl/backsig.png" />
+      </section>
+      <!-- ******************** ARIEL ********************** -->
+      <section data-background-image="images/sparks.jpg">
+        <h1>Advanced Rare Isotope Laboratory (ARIEL)</h1>
+        <div style="float: left;">
+          <img style="height:1100px" src="images/dl/arielisac.png" />
+        </div>
+        <img src="images/dl/ARIEL_logo_2.png" />
+        <h2 style="margin-top:50px">Electron Linac</h2>
+        <ul>
+          <li> Nominal 50 MeV (3 cryomodules)</li>
+          <li>Beam optics up to 75 MeV</li>
+          <li>10mA, duty cycle 0-100%</li>
+          <li>To date: only white part</li>
+        </ul>
+        <h2 style="margin-top:100px">Rare Isotope Beams</h2>
+        <ul>
+          <li>one new proton and electron BL</li>
+          <li>tripple capabilities</li>
+        </ul>
+      </section>
+      <!-- ******************** Setup ********************** -->
+
+      <section data-background-image="images/dl/darklight-entirehall.png">
+
+        <h1 style="text-shadow: 5px 5px 10px black;">The <img style="height:180px;vertical-align: -60px;"
+            src="images/dl/DarkLightLogo_framed.png" />@ARIEL Setup</h1>
+
+        
+
+      </section>
+
+
+         <section data-background-image="images/dl/dlassembled.jpeg">
+
+        <h1 style="text-shadow: 5px 5px 10px black;">The <img style="height:180px;vertical-align: -60px;"
+            src="images/dl/DarkLightLogo_framed.png" />@ARIEL Setup</h1>
+
+  
+        
+
+      </section>
+
+      <!-- ******************** Timeline/Phases ********************** -->
+
+
+      <section data-background-image="images/sparks.jpg">
+        <h1><img style="height:180px;vertical-align: -60px;"
+            src="images/dl/DarkLightLogo_framed.png" />@ARIEL Timeline</h1>
+
+        <div style="text-align:left;margin-left:100px;margin-top:50px;float:left;width:750px">
+          <p class="stress">04/2021: Proposal approved </p>
+          <p>10/2022: TRIUMF review </p>          
+          <p>06/2025: Install experiment</p>
+          <p><hl>01/2026: Commissioning complete at 30 MeV</hl></p>
+          <p>2026: TRIUMF shutdown to work on ARIEL (downstream)</p>
+          <p>2027: Energy upgrade </p>
+          <p>late 2027/ 2028: Take data at 50 MeV</p>
+        </div>
+        <div style="float:right;margin-top:50px;margin-right:50px">
+          <img style="width:1000px" src="images/dl/reach_white.png" />
+        </div>
+      </section>
+
+      <!-- ******************** Prelim ********************** -->
+      <section data-background-image="images/sparks.jpg" data-transition="unzoom-out">
+      <h1>Some preliminary results</h1>
+         <img style="width:1000px;filter: invert(1);" src="images/dl/elastic.png"/>
+        <ul class="morespace">
+          <li>Elastic scattering peak, from a single run at 10 MeV</li>
+          <li>Super preliminary: Fiducialization not implemented</li>
+        </ul>
+      </section>
+
+
+      <!-- ******************** TOC again again ********************** -->
+
+      <section data-transition="unzoom-in zoomright-out" data-background-image="images/clouds.png">
+        <h1>Tales from the precision frontier</h1>
+        <div class="columns">
+          <div class="column puzzle" data-id="zb1">
+            <h2 data-id="head">Proton radius puzzle<br />&nbsp;</h2>
+            <h3>How big is the proton?</h3>
+
+            <img style="width: 50%" src="images/proton/muse_logo_dark.png" />
+            <img style="width: 85%" src="images/proton/muse_overview.png" />
+          </div>
+          <div class="column dm">
+            <h2>
+              Beyond the<br />
+              Standard Model
+            </h2>
+            <h3>Is there an X17?</h3>
+            <img src="images/dl/DarkLightLogo_framed.png" />
+            <img style="width: 75%" src="images/dl/experiment-only.png" />
+          </div>
+
+          <div class="column sro">
+            <h2>Streaming Readout<br />&nbsp;</h2>
+            <h3>How can we make experiments better?</h3>
+            <img style="width: 54%" src="images/sro/sPHENIXlogo.png" />
+            <img style="width: 40%; vertical-align: top" src="images/sro/epiclogo.png" /><br />
+
+            <img style="margin-top: 150px" src="images/sro/daqoverview.png" />
+          </div>
+        </div>
+      </section>
+
+      <!-- ******************** Streaming Readout ********************** -->
+      <section data-transition="zoomright-in fade-out" data-background-image="images/pipes.png">
+        <h1>What is Streaming Readout: Copying German Police</h1>
+
+        <div class="columns">
+
+
+          <div class="columnnb">
+            <div style="transform:rotate(-90deg);position:absolute;left:-300px;top:560px">
+              <h2>Triggered readout</h2>
+            </div>
+            <img style="max-height:360px" src="images/sro/speedtrap.jpg" />
+            <div>
+              A simple detector (laser speedometer) <div class="sstress">triggers</div> a complex detector (camera).
+            </div>
+            <ul class="morespace" style="margin-top:100px">
+              <li>
+                Triggers on simple condition
+              </li>
+              <li class="fragment" data-fragment-index="1">
+                Miss important info
+              </li>
+              <li class="fragment" data-fragment-index="2">
+                Wrong events
+              </li>
+            </ul>
+
+          </div>
+          <div class="columnnb" style="flex:0.2;font-size:100px">
+            <div class="fragment" data-fragment-index="3">
+              <p>&#x21C9;</p>
+              <p>&#x21C9;</p>
+              <p>&#x21C9;</p>
+              <p>&#x21C9;</p>
+              <p>&#x21C9;</p>
+              <p>&#x21C9;</p>
+            </div>
+          </div>
+          <div class="columnnb">
+            <div class="r-stack">
+              <img class="fragment current-visible" style="transition-duration:0s" data-fragment-index="1"
+                src="images/sro/speedcam_bird.jpg" />
+              <img class="fragment current-visible" data-fragment-index="2"
+                src="images/sro/speeding-onlybird.jpg" />
+              <div class="fragment" data-fragment-index="3">
+                <div style="transform:rotate(90deg);position:absolute;right:-325px;top:600px">
+                  <h2>Streaming readout</h2>
+                </div>
+                <div style="float: left;height: 360px; overflow-y: hidden">
+                  <video autoplay loop style="
+              position: relative;                
+              max-width: 300%;
+              max-height: 300%;
+              height:400px;              
+            " controls>
+                    <source src="images/sro/abstand.webm" type="video/webm" />
+                  </video>
+
+                </div>
+                <div>
+                  Complex detector (video camera)<div class="sstress">continuously</div> read out. Decision made by
+                  software (police officer).</div>
+
+                <ul class="morespace" style="margin-top:60px">
+                  <li class="fragment" data-fragment-index="4">
+                    Complex conditions
+                  </li>
+                  <li class="fragment" data-fragment-index="5">
+                    Flexible after the fact
+                  </li>
+                  <li class="fragment" data-fragment-index="6">
+                    Less confusion
+                  </li>
+
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fragment sstress">Get full picture and move decisions from hardware to software.</div>
+      </section>
+
+
+
+      <!-- ******************** The Spectrum ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>The SRO spectrum</h1>
+        <div class="r-stack">
+          <img class="fragment fade-out" style="transition-duration:0s" data-fragment-index="0"
+            src="images/sro/spectrum/spectrum0.png" />
+
+          <img class="fragment" data-fragment-index="0" style="transition-duration:0s"
+            src="images/sro/spectrum/spectrum1.png" />
+        </div>
+        <div class="columnsf">
+          <div class="columnb morespace" style="margin-left:150px;margin-right:150px">
+            <hl>Save all data</hl>
+            <ul>
+
+              <li>Maximum physics</li>
+              <li>Highest rate</li>
+              <li>Lowest risk</li>
+            </ul>
+          </div>
+          <div class="columnb morespace">
+            <hl2>Save selected slices</hl2>
+            <ul>
+              <li>Keep raw data</li>
+              <li>Might lose out on new physics</li>
+              <li>Medium risk</li>
+            </ul>
+          </div>
+
+          <div class="columnb morespace" style="margin-left:150px">
+            <hl3>Save high-level data</hl3>
+            <ul>
+              <li>Maximum physics/byte</li>
+              <li>Lowest rate</li>
+              <li>Highest risk</li>
+            </ul>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- ******************** sPHENIX ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>sPHENIX: Hybrid Data Acquisition</h1>
+        <div class="r-stack">
+          <img class="fragment fade-out" style="transition-duration:0s" data-fragment-index="0"
+            src="images/sro/detector_overview.png" />
+
+          <img class="fragment current-visible" data-fragment-index="0" style="transition-duration:0s"
+            src="images/sro/detector_bytype.png" />
+          <img class="fragment" data-fragment-index="1" style="transition-duration:0s"
+            src="images/sro/detector_withtrack.png" />
+        </div>
+        <div class="fragment" data-fragment-index="0" style="font-size:100px;text-shadow:5px 5px 10px black">
+          <div style="color:orange;position:absolute;left:400px;top:200px">Triggered</div>
+          <div style="color:skyblue;position:absolute;left:400px;top:400px">
+            Streaming
+          </div>
+        </div>
+      </section>
+
+
+      <section data-background-image="images/pipes.png">
+        <h1>sPHENIX: Streaming Data</h1>
+        <img style="width:90%" src="images/sro/tpcdata.png" />
+        <div>12.9 MHz collision rate. 15kHz Trigger. Drift 13 $\mu$s $\rightarrow$ 15kHz "full" p+p events </div>
+        <div class="fragment" data-fragment-index="1">Increase readout width by 50% $\rightarrow$ ca. 100x "full" p+p
+          events, <span class="sstress">10% of all possible events!</span></div>
+        <div style="position:absolute;color:orange; left:1100px;top:400px;font-size:30px">Based on figures courtesy of
+          Jin Huang (BNL)</div>
+        <img style="width:90%" class="fragment" data-fragment-index="1" src="images/sro/stretched.png" />
+
+      </section>
+
+      <!-- ******************** Lobbyism ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>Streaming Readout working projects</h1>        
+      
+        <div style="text-align:left">
+          <ul class="morespace">
+            <li>ePIC will use streaming readout: Multiple working groups</li>
+            <li>SRO beyond ePIC:
+              <ul>
+                <li>Many alliances/WG/experiments world wide</li>
+                <li>We meet regularly to exchange knowledge</li>
+                <li>Latest meeting: Streaming readout workshop XIII in Catania Dec 2025</li>
+                <li><hl>Next meeting: Organized by Giordano Cerizza (FRIB/MSU), probably Late 2026 </hl></li>
+              </ul>
+
+            </li>
+          </ul>          
+
+
+        </div>
+
+      </section>
+ <section data-background-image="images/pipes.png">
+        <h1>Happy bussy people</h1>        
+      
+        <div ">
+       <video autoplay loop muted playsinline disablePictureInPicture preload="none" style="height:1000px;">
+          <source src="https://cfnssbu.physics.sunysb.edu/DarkLight%20Highlights.mp4" type="video/mp4" />
+        </div>
+
+      </section>
+
+
+
+      <!--
+    <section data-background-image="2023_colloq_images/pipes.png">
+        <h1> Streaming Readout advantaguous also for small experiments</h1>
+        <div style="text-align:left">
+          <ul >
+            <li>Potential for more physics per hour</li>
+            <li>Facilitates integration of online monitoring and offline analysis</li>
+            <li>Reduces time-to-publication</li>
+            <li>Easier to scale and reuse</li>            
+            <li>Moves problem space from hardware to software: more resources! </li>
+          </ul>
+              
+      </section>
+    -->
+      </section>
+
+    </div>
+  </div>
+
+  <script src="reveal.js"></script>
+  <script src="highlight.js"></script>
+  <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.2.2.min.js"></script>
+  <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.2.2.min.js"></script>
+  <script type="text/javascript">
+    Bokeh.set_log_level("info");
+  </script>
+  <script>
+    window.resizeTo(1920, 1200);
+
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.initialize({
+      hash: true,
+      width: 1920,
+      height: 1200,
+      margin: 0.04,
+      slideNumber: false,
+      controls: false,
+      progress: false,
+      transition: "fade",
+      center: false,
+      preloadIframes: true,
+      viewdistance: 30,
+      backgroundTransition: "fade",
+      // Learn about plugins: https://revealjs.com/plugins/
+      plugins: [
+        RevealMarkdown,
+        RevealHighlight,
+        RevealNotes,
+        RevealMath.KaTeX,
+      ],
+    });
+    Reveal.addEventListener("slidechanged", (event) => {
+      const isSnOn = event.currentSlide.dataset.hideSlideNumber !== "true";
+      Reveal.configure({ slideNumber: isSnOn });
+    });
+  </script>
+</body>
+
+</html>
