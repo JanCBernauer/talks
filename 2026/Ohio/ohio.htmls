@@ -588,8 +588,9 @@ src="images/proton/prad/pradres1.png" />
   <ul style="flex:1;">
     <li>PADME: 2$\sigma$ (J. High Energ. Phys. 2025, 7 (2025))</li>
     <li>Ongoing: DarkLight, PRad-X17, LHCb, ... </li>
+    <li>Compatibility between ATOMKI, g-2, PADME: arXiv:2601.05288</li>
   </ul>
-  <img style="width: 50%; margin-left: 20px;" src="images/dl/padme.png" />
+  <img style="width: 60%; margin-left: 20px;margin-top:-100px;" src="images/dl/padme.png" />
 </div>
 </div>
 
