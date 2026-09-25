@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <title> The analysis and blinding framework for MUSE</title>
+
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="reveal.css" />
+  <link rel="stylesheet" href="black.css" />
+
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href="monokai.css" />
+  <link rel="stylesheet" href="mystyle.css" />
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <!-- ******************** TITLE SLIDE ********************** -->
+      <section data-hide-slide-number="true" data-background-image="images/puzzle.jpg"
+        data-transition="zoom">
+        <h1 style="text-shadow: 5px 5px 10px black; margin-top:200px">
+         The analysis and blinding framework for MUSE
+        </h1>
+        <h2 style="text-shadow: 5px 5px 10px black;">Jan C. Bernauer</h2>
+        <h2 style="text-shadow: 5px 5px 10px black;">APS Global Summit</h2>
+        <div style="margin-bottom: 100px">March, 2026</div>
+        <center>
+          <img style="height: 250px; vertical-align: -100px; margin-right: 100px"
+            src="images/cfns_logo_2018.png" />
+          <img style="height: 300px; vertical-align: -150px; margin-right: 100px"
+            src="images/SBUlogo.png" />
+        </center>
+
+        <div class="support">
+          Dr. Bernauer's work is supported by NSF PHY-2012114+2412703 and DOE-SC0024464. The MUSE experiment is supported by the Department of Energy, NSF, PSI, and the US-Israel Binational Science Foundation.MUSE
+        </div>
+      </section>
+
+      <!-- ******************** TOC ********************** -->
+
+      <section  data-background-image="images/puzzle.jpg">
+        <h1>The title is half a lie</h1>
+        <p style="margin-top:100px">The <hl> cooker</hl> framework was originally designed for OLYMPUS. It has been used in:</p>
+        <p>
+        <ul class="morespace">
+            <li>OLYMPUS</li>
+            <li>MUSE</li>
+            <li>TREK@J-PARC</li>
+            <li>DarkLight</li>
+            
+        </ul>
+</p>
+<p>
+        <hl>cooker</hl> is a wrapper around <hl2>CERN root</hl2>
+        </p>
+      </section>
+<!--
+      <section  data-background-image="images/puzzle.jpg">
+        <h1>Design considerations</h1>
+        <ul class="morespace">
+            <li> Decouple development</li>
+            <li> Must allow the user to use arbitrary data structures.</li>
+            <li> Remove some of the warts of root, reduce boiler-plate code</li>
+            <li> Automatically handle weights for MC in histograms</li>
+            <li> Have a command line version and a graphical interface to explore data event by event</li>
+        </ul>
+        
+      </section>
+-->
+      <section  data-background-image="images/puzzle.jpg">
+        <h1>Design goals: Decoupled development</h1>
+            <p style="margin-top:100px"><hl>cooker</hl> uses a plugin architecture. </p>
+            <ul >
+                <li>Plugins are shared libraries that are loaded at runtime</li>
+                <li>Can be developed independently by different teams in the collaboration</li>
+                <li>Broken plugins can be easily disabled.</li>
+                <li>Separation of concerns: A plugin does one task(-family). Limited interface to other plugins, data flow explicit.</li>
+                <li>Plugins can be easily exchanged: easy to try and compare different algorithms for the same task.</li> 
+
+                    </ul>
+
+
+                  <script style="zoom:3" type="text/tikz" alt="Plugin hierarchy example for MUSE">
+                 
+                  \begin{document}
+                 \usetikzlibrary{arrows.meta}
+                 \begin{tikzpicture}[
+  node distance=1.2cm,
+  column/.style={rectangle, draw=none, font=\sffamily\Large\bfseries\color{cyan}, text width=5cm, align=center},
+   or/.style={rectangle, draw=none, font=\sffamily\bfseries\color{cyan}, text width=5cm, align=center},
+  plugin/.style={rectangle, draw=white, rounded corners, minimum width=4cm, minimum height=0.7cm, font=\sffamily\small, text=white, align=center},
+  arrow/.style={-{Triangle[width=8mm,length=6mm]}, line width=3mm, white}
+]
+% Column titles (top-aligned)
+\node[column] (dataTitle) at (0,3.5) {Data Source};
+\node[column] (detectorTitle) at (5,3.5) {Detector-level};
+\node[column] (trackingTitle) at (10,3.5) {Tracking};
+\node[column] (highlevelTitle) at (15,3.5) {High level};
+
+% Data Source nodes (centered)
+\node[plugin] (raw) at (0,0.6) {Raw data};
+\node[or] (genfit) at (0,0) {-or-};
+
+\node[plugin] (mc) at (0,-0.6) {MC + digitization};
+
+% Detector-level nodes (centered)
+\node[plugin] (straw) at (5,2.4) {StrawTube};
+\node[plugin] (gem) at (5,1.6) {GEM};
+\node[plugin] (veto) at (5,0.8) {Veto};
+\node[plugin] (beam) at (5,0) {Beam Monitor};
+\node[plugin] (sps) at (5,-0.8) {SPS};
+\node[plugin] (calo) at (5  ,-1.6) {Calo};
+\node[plugin] (calo) at (5  ,-2.4) {...};
+
+
+% Tracking nodes (centered)
+\node[plugin] (genfit) at (10,1.8) {GenFit};
+\node[or] (genfit) at (10,1.2) {-or-};
+
+\node[plugin] (lsqr) at (10,+0.6) {LSQR};
+\node[or] (genfit) at (10,0) {-or-};
+
+\node[plugin] (aiml) at (10,-0.6) {AI/ML};
+\node[or] (genfit) at (10,-1.2) {-or-};
+\node[plugin] (aiml) at (10,-1.8) {...};
+
+% High level nodes (centered)
+\node[plugin] (calib) at (15,1.2) {Inter-detector Calibrations};
+\node[plugin] (physics) at (15,0.4) {Physics analaysis Student A};
+\node[plugin] (physics) at (15,-0.4) {Physics analaysis Student B};
+
+\node[plugin] (physics) at (15,-1.2) {...};
+
+% Arrows (center height)
+\draw[arrow] (2,0) -- (3,0);
+\draw[arrow] (7,0) -- (8,0);
+\draw[arrow] (12,0) -- (13,0);
+
+\end{tikzpicture}
+                 
+                 
+                  \end{document}
+                </script>
+
+
+                </section>
+      <section  data-background-image="images/puzzle.jpg">
+        <h1>Design goal: Arbitrary data structures</h1>
+        
+<div class="columns">
+  <div class="column" style="flex: 0 0 95%; max-width: 95vw;">
+    <p><hl>cooker</hl> uses root trees and root serialization for data exchange. </p>
+    <p>
+    <ul class="morespace">
+        <li>Plugins select which branches to read &mdash; either from input file or output file (= from other plugin run at the same time)</li>
+        <li>Plugins can create new branches in the output file.</li>
+        <li>Full control over data structure. </li>
+        <li>Tree data structure also documents data interface between plugins.</li>
+    </ul></p>
+  </div>
+  <img class="maxcolumn" style="flex: 0 0 15%; max-width: 25vw;" src="images/BHtree.png" />
+</div>
+                </section>
+            
+     
+            
+            <section  data-background-image="images/puzzle.jpg">
+        <h1>Less warts, less boiler-plate code, less things to get wrong</h1>
+           <p style="margin-top:100px"><hl>cooker</hl> uses recipes to select plugins / functions in plugin.</p>
+                
+           <p> Plugin can implement functions for three phases:</p>
+            <ul>
+                <li>Startup: Before event processing</li>
+                <li>Process: Called for each event  (multiple loops over file possible)</li>
+                <li>Finalize: After event processing</li>
+            </ul>
+            <div class="fragment" style="display: flex; align-items: flex-start; gap: 30px;">
+              <div>
+                <p>For free:</p>
+                <ul>
+                    <li> Event loop, file handling</li>
+                    <li> Automatic handling of event weights <br>(when using overloaded histogram functions)</li>
+                    <li> Automatic support for multiple input files</li>
+                    <li> Automatic support for MPI-style multi-processing</li>
+                    <li> Automatic support for event-navigation in GUI</li>
+                    <li> Robust init file handling</li>
+                </ul>
+              </div>
+              <img src="images/visco.png" style="height: 600px; width: auto; margin-top: 20px;" />
+            </div>
+            </section>
+            
+            <section  data-background-image="images/puzzle.jpg">
+        <h1>Blinding in MUSE: The threat model</h1>
+               <h2> Situation:</h2> MUSE is trying to measure the proton radius with high precision. This is a highly debated field.   
+               <div class="fragment">
+
+               <h2 style="margin-top:50px;"> Want to protect against:</h2>
+               <ul>
+                <li> Confirmation bias: Researchers have expectations for the radius which might unconsciously bias analysis.</li>
+                <li> Premature declare-victory trap: A result that looks "right" might short-cut further systematics checks. </li>
+                <li> Unintended publication: Data shown at conferences might be close enough to final results that they could be (mis)interpreted by outside parties.</li>
+                <li> Accidental unblinding.</li>
+               </ul>
+            </div>
+               <div class="fragment">
+               <h2 style="margin-top:50px;"> What is not included in our threat model</h2>
+               <ul>
+                <li> Malicious actors: Open data and open code.</li>
+               </ul>
+      </div>
+</section>
+
+    <section  data-background-image="images/puzzle.jpg">
+        <h1>Approach in MUSE</h1>
+            <p> MUSE is a high precision <hl>cross section</hl> measurement and has several types of results:</p>
+            <ul>
+            
+                <li> Cross sections: $\left.\frac{d\sigma}{d\Omega}\right|_{\text{data}}   / \left.\frac{d\sigma}{d\Omega}\right|_{\text{MC}}$</li>
+                <li> Lepton ratios: Ratio of cross section for different leptons</li>
+
+                <li> Charge asymmetries: Ratio of cross section for $l^+$ vs $l^-$</li>
+                <li> Radii: $\approx$ Slopes of cross sections</li>
+            </ul>
+     <p>$\Longrightarrow$ Need to affect shape, not only normalization. Need to affect data and MC differently. Need to affect different leptons/charges differently. </p>
+<div class="fragment">
+<ul class="morespace">
+
+    <li> We blind on the track level: tracking is slow and will only be done centrally.</li>
+    <li> Cooker framework recognizes track-plugin output and blinds it</li>
+    <li> Tracks are selected with an angle dependent probability</li>
+    <li>Selected tracks are marked and encrypted: Normal analysis doesn't see them</li>
+    <li> For unblinding: Decrypt, run all "downstream" plugins (fast)</li>
+</ul>
+
+</div>
+</section>
+
+
+    <section  data-background-image="images/puzzle.jpg">
+        <h1>Blinding probability</h1>
+   $$ P(\theta)= 0.2(A+0.3\cos(B\theta)) \frac{3-\theta}{3}$$
+         <!-- ...existing code... -->
+<ul>
+    <li> Suppresses more at forward angles where we have best statistics</li>
+    <li> Parameters A and B: randomly generated from a fixed seed.</li>
+    <li> Different for species, beam momentum, beam charge, data vs. MC.</li>
+</ul>
+<div class="fragment" style="margin-top:70px;">
+ Blinding will always reduce rate at small angles $\rightarrow$ <hl>Can guess direction?</hL>
+</div>
+<div class="fragment">
+    <hl> No!</hl> Results are always ratios. Final sign of correction is unknown!
+    <br/>
+<img style="height: 600px; margin-top: 50px" src="images/blindexample.png" />
+</div>
+
+
+
+</section>
+
+    <section  data-background-image="images/puzzle.jpg">
+        <h1>Unblinding strategy</h1>
+        <h2>Key management</h2>
+        <ul>
+            <li>
+        Decryption keys for tracks are stored in the output files, encrypted via Public-Key-Cryptography. </li>
+        <li> Three people have keys. Need keys from two people to decrypt. No single point of failure, no unilateral unblinding.</li>
+       <li> Can unblind selectively by species, momentum, time chunk</li>
+    </ul>
+
+    <div class="fragment">
+    <h2 style="margin-top: 50px;"">
+Planned schedule
+    </h2>
+    <ol>
+        <li> Unblind pion data first: Less controversal, smaller bias. </li>
+     <li> Unblind TPE data (MC cancels)</li>
+     <li> Unblind all</li>
+    </ol>
+    <p>
+    In each group, we will first unblind step by step a fraction of the data, either by momentum or by time chunk. This allows us to check for unexpected issues before unblinding the full data set.</p>
+    </div>
+
+<div class="fragment">For more details on our blinding scheme, see arxiv:2310.11469  <img style="height: 200px; margin-top: 50px" src="images/blindingQR.png" /></div>
+  
+</section>
+
+
+    </div>
+  </div>
+
+  <script src="reveal.js"></script>
+  <script src="highlight.js"></script>
+  <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.2.2.min.js"></script>
+  <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.2.2.min.js"></script>
+  <script type="text/javascript">
+    Bokeh.set_log_level("info");
+  </script>
+  <script>
+    window.resizeTo(1920, 1200);
+
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.initialize({
+      hash: true,
+      width: 1920,
+      height: 1200,
+      margin: 0.04,
+      slideNumber: false,
+      controls: false,
+      progress: false,
+      transition: "fade",
+      center: false,
+      preloadIframes: true,
+      viewdistance: 30,
+      backgroundTransition: "fade",
+      // Learn about plugins: https://revealjs.com/plugins/
+
+    });
+    Reveal.addEventListener("slidechanged", (event) => {
+      const isSnOn = event.currentSlide.dataset.hideSlideNumber !== "true";
+      Reveal.configure({ slideNumber: isSnOn });
+    });
+  </script>
+</body>
+
+</html>

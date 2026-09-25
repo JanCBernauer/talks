@@ -1,0 +1,10 @@
+# reveal.js checkout, symlinked in from ../Lectures_with_reveal
+/reveal
+
+# single-file talks packaged by the Makefile
+/*.html
+/*.zip
+
+# baked from <name>.htmls by `gulp tikzbake`
+/*/*/*.html
+/*/*/images/tikz/

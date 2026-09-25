@@ -1,0 +1,178 @@
+
+.columns{
+    display:flex;   
+    
+    height:1000px;
+    
+}
+.columnsf{
+    display:flex;   
+    
+ 
+    
+}
+.column {
+    flex:1;
+    margin-right:30px;
+    padding-top:10px;
+}
+.column:last-child {
+    margin-right:0;
+}
+
+.columnnb {    
+    flex:1;
+  
+    padding-top:10px;
+}
+.columnnb:last-child {
+    margin-right:30px;
+}
+
+
+.maxcolumn{
+    margin:0px;
+    height:100vh;
+    width:100vw;
+}
+
+  
+.reveal h1 {
+    color:deepskyblue;
+    font-size: 80px;
+    font-variant: small-caps; 
+    text-transform:none;
+  
+}
+.reveal h2{
+    color:skyblue;
+    font-size:60px;
+    text-transform:none;
+}
+
+.reveal h3{
+    text-transform:none;
+    font-size:40px;
+}
+
+.puzzle {
+    background-image:url("./2023_colloq_images/puzzle.jpg");
+    background-position: -400px 0px;  
+}
+
+
+.dm{
+    background-image:url("./2023_colloq_images/sparks.jpg");
+    background-position: -600px 0px;   
+ 
+}
+
+.sro{
+    background-image:url("./2023_colloq_images/pipes.png");
+    background-position: -900px -75px;   
+ 
+}
+
+.reveal .slide-number{
+    font-size:30px;
+    background-color:transparent;   
+}
+
+.support{
+    
+    position:fixed;
+    left:10px;
+    top:1100px;
+    font-size:30px;
+}
+.src{
+    display:float;
+    position:fixed;
+    text-align:right;
+    right:20px;
+    font-size:20px;
+
+}
+
+.imagestack{
+    margin: auto;
+    float:center;
+    position:relative;
+}
+
+.stacked{
+    position:absolute;
+    top:0;
+    left:0;
+}
+
+.reveal img{
+    margin:0px;
+}
+
+.hide {
+    display: none !important;
+  }
+
+.stress{
+    color:rgb(90, 176, 210);
+}
+.sstress{
+    color:orange;
+    font-size: 150%;
+}
+.me{
+    color:skyblue;
+}
+
+.photo{
+    width:200px;
+    display:inline-block;
+    font-size:90%        
+}
+.photos{
+    width:165px;
+    display:inline-block;
+    font-size:80%    
+}
+
+
+.morespace li{
+    padding: 20px 0px;
+}
+
+.reveal blockquote{
+    background:rgba(0,0,0,0.1);
+    font-size:200%;
+    width:90%;
+}
+
+.shadow{
+    text-shadow: 3px 3px 15px black,
+    3px 3px 15px black,
+    3px 3px 15px black,
+    3px 3px 15px black;
+}
+
+html .blur .backgrounds {
+ 
+    filter: blur(15px) saturate(.7) brightness(.7);
+ }
+
+ html .blur2 .backgrounds {
+ 
+    filter: blur(15px) saturate(1) contrast(0.3) brightness(1.3);
+ }
+
+ hl{
+    color:orange;
+     font-weight: bold;
+ }
+
+
+
+ .cite{
+    font-size:50%;
+    font-style: normal;
+ }
+

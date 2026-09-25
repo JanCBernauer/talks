@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <title>Foundation Models for Transferable Particle Tracking</title>
+
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="reveal.css" />
+  <link rel="stylesheet" href="black.css" />
+
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href="monokai.css" />
+  <link rel="stylesheet" href="mystyle.css" />
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ******************** TITLE SLIDE ********************** -->
+      <section data-hide-slide-number="true" data-background-image="images/clouds.png" data-transition="zoom">
+        <h1 style="text-shadow: 5px 5px 10px black; margin-top:110px">
+          Foundation Models for<br />Transferable Particle Tracking
+        </h1>
+        <h2 style="text-shadow: 5px 5px 10px black;">Jan C. Bernauer</h2>
+        <h2 style="text-shadow: 5px 5px 10px black;">Streaming Readout Workshop XIV, FRIB/MSU</h2>
+        <div style="margin-bottom: 60px">&lt;date&gt;, 2026</div>
+        <center>
+          <img style="height: 250px; vertical-align: -100px; margin-right: 100px"
+            src="images/cfns_logo_2018.png" />
+          <img style="height: 300px; vertical-align: -150px; margin-right: 100px"
+            src="images/SBUlogo.png" />
+        </center>
+
+        <div class="support">
+          Work partially supported by NSF PHY-2012114+2412703 and DOE-SC0024464.
+          TPTNP is supported by the DOE Genesis Mission.
+        </div>
+      </section>
+
+      <!-- ******************** WHY A FOUNDATION MODEL ********************** -->
+      <section data-background-image="images/puzzle.jpg">
+        <h1>Why a foundation model for detector data?</h1>
+
+        <p style="margin-top:30px">Today, essentially every reconstruction task gets its
+          <hl>own</hl> network, trained on its <hl>own</hl> labels, for <hl>one</hl> detector.</p>
+
+        <div class="fragment" style="margin-top:40px">
+          <h2>The foundation model recipe</h2>
+          <ol>
+            <li>Pre-train one large model <hl2>self-supervised</hl2> on huge amounts of
+              <em>unlabeled</em> data</li>
+            <li>Freeze it. Attach a small, cheap, <hl2>task-specific adapter</hl2></li>
+            <li>Repeat step 2 for every new task, with very little labeled data</li>
+          </ol>
+          <img class="paperfig" style="width:64%;margin-top:15px"
+            src="images/fm4npp/intro_fig_white.png" />
+        </div>
+
+        <div class="fragment" style="margin-top:25px">
+          We have exactly the right raw material: simulation and detector data are
+          <hl3>abundant and unlabeled</hl3>; truth labels are expensive. But detector data is
+          <em>not</em> text and <em>not</em> images &mdash; it is
+          <hl>sparse, 3D, unordered, and variable-length</hl>.
+        </div>
+      </section>
+
+      <!-- ******************** FM4NPP: WHAT IT IS ********************** -->
+      <section data-background-image="images/puzzle.jpg">
+        <h1>FM4NPP: a scaling foundation model for NPP</h1>
+        <div class="columnsf">
+          <div class="columnnb">
+            <h2>The data</h2>
+            <ul>
+              <li>sPHENIX TPC: 48 layers, $\sim$160k channels, 41.6M voxels</li>
+              <li><hl>11M+</hl> simulated $p+p$ events at $\sqrt{s}=200$ GeV</li>
+              <li>Event = set of spacepoints $(\mathcal{E}, x, y, z)$</li>
+            </ul>
+            <h2 style="margin-top:40px">The trick: make it a sequence</h2>
+            <ul>
+              <li><hl2>Hierarchical raster scan</hl2>: bin in $(r,\eta,\phi)$, order the
+                bins outward, order points inside</li>
+              <li>Backbone: stack of causal <hl2>Mamba-2</hl2> blocks &mdash; linear in
+                sequence length, not quadratic</li>
+            </ul>
+          </div>
+          <div class="columnnb">
+            <h2>Self-supervision without labels</h2>
+            <ul>
+              <li>Naive "next token" would just learn the serialization</li>
+              <li>Instead: <hl>k-next-nearest-neighbor</hl> prediction &mdash; from hit
+                $s_i$, predict the $k$ closest hits at <em>larger radius</em></li>
+              <li>$\mathcal{N}_c(s_i)=\{s_j \mid r_j \gt r_i\}$, &nbsp; $k=10$</li>
+              <li>Loss is plain coordinate MSE. No truth tracks anywhere.</li>
+            </ul>
+            <div class="fragment" style="margin-top:40px">
+              <hl3>This teaches the model how a trajectory continues.</hl3>
+            </div>
+          </div>
+          <div class="columnnb" style="flex:0.55">
+            <img class="paperfig" style="width:100%" src="images/fm4npp/preprocessing_pretrain.png" />
+          </div>
+        </div>
+        <div class="src">Figures: D. Park, S. Li, Y. Huang et al., arXiv:2508.14087</div>
+      </section>
+
+      <!-- ******************** FM4NPP: WHAT IT SHOWED ********************** -->
+      <section data-background-image="images/puzzle.jpg">
+        <h1>FM4NPP: it scales, and it generalizes</h1>
+
+        <h2>Neural scaling: clean power laws in model size, data and compute</h2>
+        <img class="paperfig" style="width:66%" src="images/fm4npp/neural_scaling.png" />
+
+        <div class="columnsf dense" style="margin-top:15px">
+          <div class="columnnb" style="flex:1.6">
+            <h2>Frozen backbone + tiny adapters beat specialists</h2>
+            <ul>
+              <li><hl2>Track finding</hl2>: beats Exa.TrkX and EggNet. Against the official
+                sPHENIX CA+Kalman chain (high-$p_T$, long tracks):
+                <hl>99.6% vs 94.6%</hl> efficiency</li>
+              <li><hl2>Particle ID</hl2>: best accuracy, recall and precision of all baselines</li>
+              <li><hl2>Noise tagging</hl2>: matches OneFormer3D &mdash; with a <hl>0.74M</hl>
+                parameter head against its <hl>45M</hl></li>
+            </ul>
+            <p class="fragment">The representation is <hl3>task-agnostic</hl3>: one linear map
+              specializes it per task.</p>
+          </div>
+          <div class="columnnb" style="flex:0.7">
+            <img class="paperfig" style="width:100%" src="images/fm4npp/background.png" />
+          </div>
+        </div>
+        <div class="src">Figures: D. Park, S. Li, Y. Huang et al., arXiv:2508.14087</div>
+      </section>
+
+      <!-- ******************** THE GENESIS PROJECTS ********************** -->
+      <section data-background-image="images/clouds.png">
+        <h1>Three Genesis Mission projects grew out of it</h1>
+        <p style="margin-top:20px">DOE Genesis Mission Phase&nbsp;I. BNL leads 7 projects and
+          contributes to 29 more; three of those build directly on FM4NPP.</p>
+
+        <div class="columns" style="height:560px;margin-top:25px">
+          <div class="column">
+            <h3>LLNL</h3>
+            <h2 style="font-size:42px">Multimodal enhancements to FM4NPP</h2>
+            <p class="note">with BNL</p>
+            <p style="margin-top:25px">Take the backbone beyond the TPC: additional detector
+              modalities feeding one model.</p>
+          </div>
+          <div class="column">
+            <h3>MIT</h3>
+            <h2 style="font-size:42px">Multi-modal, multi-facility FM4NPP</h2>
+            <p class="note">with BNL</p>
+            <p style="margin-top:25px">Silicon trackers and electron colliders &mdash; carry
+              the trained model to new facilities.</p>
+          </div>
+          <div class="column" style="border-color:orange;border-width:3px">
+            <h3 style="color:orange">Stony Brook</h3>
+            <h2 style="font-size:42px;color:orange">Transferable particle tracking</h2>
+            <p class="note">with Argonne, BNL</p>
+            <p style="margin-top:25px">One tracking model that works on a detector it has
+              <em>never seen</em>. <hl2>The rest of this talk.</hl2></p>
+          </div>
+        </div>
+
+        <div style="margin-top:20px">
+          <h2>Other funded foundation-model projects</h2>
+          <div class="dense" style="margin-top:10px">
+            <span class="me">W&amp;M</span> mixture-of-experts FMs for particle interactions
+            &nbsp;&middot;&nbsp;
+            <span class="me">Wisconsin</span> principles of FMs for particle and nuclear physics
+            &nbsp;&middot;&nbsp;
+            <span class="me">Hawaii</span> an FM to unify neutrinoless double beta decay searches
+            &nbsp;&middot;&nbsp;
+            <span class="me">BNL</span> cross-domain reasoning with composable FMs
+          </div>
+        </div>
+      </section>
+
+      <!-- ******************** OUR PROPOSAL: THE GOAL ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>TPTNP: Transferable Particle Tracking</h1>
+
+        <div style="margin-top:40px">
+          <p style="font-size:56px" class="sstress">A model that understands tracks &mdash;
+            not a model that has memorized one detector.</p>
+        </div>
+
+        <div class="fragment" style="margin-top:40px">
+          <h2>Three design requirements</h2>
+          <ul>
+            <li><hl>Experiment independent.</hl> No geometry in the weights. Give it a
+              detector it has never seen, and it tracks.</li>
+            <li><hl2>Multi-modal.</hl2> Strips, pixels, GEMs, straws, TPC voxels &mdash;
+              one representation.</li>
+            <li><hl3>Raw detector information.</hl3> Enter at the measurement, not at a
+              pre-built spacepoint.</li>
+          </ul>
+        </div>
+
+        <div class="fragment" style="margin-top:40px">
+          Team: <span class="me">SBU</span> JCB (lead PI), Axel Drees &middot;
+          <span class="me">Argonne</span> Henry Klest &middot;
+          <span class="me">BNL</span> Yeonju Go, Yi Huang
+        </div>
+      </section>
+
+      <!-- ******************** WHY FM4NPP DOESN'T TRANSFER ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>Why the published design cannot transfer as-is</h1>
+
+        <div class="columnsf">
+          <div class="columnnb">
+            <h2>Geometry lives in the weights</h2>
+            <ul>
+              <li>Coordinates are <hl>cylindrical, fixed</hl>: $(\mathcal{E},\eta,\phi,r)$</li>
+              <li>The model <em>learns</em> where the 48 TPC layers are</li>
+              <li>A hit is a <hl>spacepoint</hl>: a straw's drift circle and a strip's
+                long thin volume are already flattened to a point</li>
+            </ul>
+          </div>
+          <div class="columnnb">
+            <h2>The backbone is causal</h2>
+            <ul>
+              <li>$h_i = f(s_1,\dots,s_i)$ &mdash; the first hits in the sequence see
+                almost <hl>no context</hl></li>
+              <li>Serialization is a <em>computational convention</em>, not a physical
+                arrow of time</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="fragment" style="margin-top:60px">
+          <h2>Our two answers</h2>
+          <ol>
+            <li><hl>Hand the geometry to the model per event</hl>, as typed tokens &mdash;
+              so nothing about a detector is in the weights.</li>
+            <li><hl2>Run the same Mamba stack in both directions</hl2> &mdash; every hit
+              gets prefix and suffix context.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ******************** DATA: A POPULATION OF DETECTORS ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>Training data: many detectors, not many events</h1>
+
+        <p style="margin-top:30px">A detector-independent tracker needs a
+          <hl>population of detector layouts</hl>. We built a generator that samples one.</p>
+
+        <div class="columnsf" style="margin-top:20px">
+          <div class="columnnb">
+            <h2>Per layout, sampled</h2>
+            <ul>
+              <li><em>Planar stations:</em> 3&ndash;5 stations, each independently
+                scintillator&nbsp;/&nbsp;GEM&nbsp;/&nbsp;straw&nbsp;/&nbsp;pixel</li>
+              <li><em>VTX/TPC barrel:</em> 2 vertex + 3 TPC shells</li>
+              <li>Pitch, bar width, straw radius, stereo angles, spacing</li>
+              <li>Field: axial, transverse, or <hl>none</hl> (20% of layouts)</li>
+              <li><hl2>Misalignment</hl2> 2 mm / 2&deg;, efficiency 0.90&ndash;1.00, noise</li>
+            </ul>
+          </div>
+          <div class="columnnb">
+            <h2>Every element is one of three primitives</h2>
+            <ul>
+              <li>box &middot; annular sector &middot; cylindrical shell</li>
+              <li>given as translation + orientation + up to 6 parameters</li>
+            </ul>
+            <h2>And the crossings are <em>exact</em></h2>
+            <ul>
+              <li>A helix coordinate is a sinusoid plus a linear drift &rarr; slab entry/exit
+                arc lengths enumerate in <hl>closed form</hl></li>
+              <li>Crossing is a <em>feasibility test</em>, not a distance minimization
+                &mdash; the corner minima have no closed form, the slab boundaries do</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="fragment sstress" style="margin-top:20px">
+          Split 80/10/10 <hl>by layout</hl>: a validation detector is never a training detector.
+        </div>
+      </section>
+
+      <!-- ******************** TYPED TOKEN STREAM ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>The typed token stream</h1>
+
+        <div class="columnsf dense">
+          <div class="columnnb">
+            <p>One event is one sequence. First token carries the magnetic field, then
+              <hl>one root token per fired detector element</hl>.</p>
+            <p><em>A root token is not a spacepoint.</em> It carries the element it fired
+              in &mdash; which is what makes it transferable.</p>
+            <table style="margin-top:10px">
+              <tr><td><hl2>translation</hl2></td><td>3</td><td>normalized, Fourier-encoded</td></tr>
+              <tr><td><hl2>orientation</hl2></td><td>6</td><td>two columns of the rotation matrix</td></tr>
+              <tr><td><hl2>primitive params</hl2></td><td>6</td><td>half extents / sector / shell</td></tr>
+              <tr><td><hl2>primitive type</hl2></td><td>id</td><td>box, annular sector, shell</td></tr>
+              <tr><td><hl2>detector type</hl2></td><td>id</td><td>strip, pixel, GEM, TPC voxel, straw</td></tr>
+              <tr><td><hl2>layer, group</hl2></td><td>id</td><td>$\sin/\cos$ codes, <em>not</em> a vocabulary</td></tr>
+              <tr><td><hl2>hit features</hl2></td><td>$F$</td><td>the measurement itself</td></tr>
+              <tr><td><hl2>amplitude</hl2></td><td>1+bands</td><td>with a <hl>validity</hl> channel</td></tr>
+            </table>
+          </div>
+          <div class="columnnb">
+            <h2>Three choices worth defending</h2>
+            <ul>
+              <li><hl>Sum, don't concatenate.</hl> Every field is projected to the model
+                width and added, so token width does not depend on how many typed fields a
+                given detector populates.</li>
+              <li><hl>Layer and group as $\sin/\cos$ codes.</hl> A detector may have any
+                number of either; neighbours stay near each other with no maximum fixed at
+                training time.</li>
+              <li><hl>One scale for all three axes.</hl> Which axis is long is a property of
+                the <em>layout</em>, not of physics. Per-axis normalization would resolve two
+                interchangeable axes a decade apart.</li>
+            </ul>
+            <p class="fragment note">An unmeasured amplitude and a measured zero are the same
+              number once you spread it over Fourier bands &mdash; hence the validity channel.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ******************** BIDIRECTIONAL BACKBONE ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>A bidirectional Mamba-2 backbone</h1>
+
+        <div class="columnsf">
+          <div class="columnnb">
+            <p>The <hl>same</hl> stack, run over the stream in both orders, as one batch of
+              twice the size. Parameters are shared; the two state spaces stay compatible.</p>
+            <p style="margin-top:20px">
+              $h_i^{\mathrm F}=f(x_1,\dots,x_i)$, &nbsp;&nbsp;
+              $h_i^{\mathrm R}=f(x_N,\dots,x_i)$
+            </p>
+            <p>No averaging, no projection back down: what we expose is the raw
+              concatenation $[h^{\mathrm F};h^{\mathrm R}]$ of width $2W$, and whatever
+              sits downstream decides what to do with it.</p>
+            <p style="margin-top:20px">Cost: <hl2>two linear passes are still linear.</hl2>
+              $\mathcal{O}(S)+\mathcal{O}(S)=\mathcal{O}(S)$ &mdash; no quadratic attention
+              matrix over hits.</p>
+
+            <table style="font-size:32px;margin-top:30px">
+              <tr><td></td><td><hl>local</hl></td><td><hl>fwd</hl></td><td><hl>rev</hl></td><td><hl>bidi</hl></td></tr>
+              <tr><td>width</td><td>$W$</td><td>$W$</td><td>$W$</td><td>$2W$</td></tr>
+              <tr><td>sees</td><td>the token</td><td>prefix</td><td>suffix</td><td>the event</td></tr>
+            </table>
+          </div>
+          <div class="columnnb">
+            <script style="width:100%" type="text/tikz" alt="Bidirectional Mamba backbone">
+              \begin{document}
+              \usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+              \begin{tikzpicture}[
+                box/.style={rectangle, draw=white, rounded corners, minimum width=4.2cm,
+                            minimum height=0.9cm, font=\sffamily\small, text=white, align=center},
+                hi/.style={rectangle, draw=cyan, very thick, rounded corners, minimum width=4.2cm,
+                            minimum height=0.9cm, font=\sffamily\small, text=cyan, align=center},
+                arrow/.style={-{Triangle[width=3mm,length=2.5mm]}, line width=0.8mm, white}
+              ]
+                \node[box] (emb) at (0,0) {embedded stream $x_1 \ldots x_N$};
+                \node[box] (fwd) at (-2.6,-2) {Mamba2 stack\\ \textit{forward}};
+                \node[box] (rev) at (2.6,-2) {Mamba2 stack\\ \textit{reverse}};
+                \node[font=\sffamily\tiny\color{orange}] at (0,-2) {shared};
+                \node[box] (hf) at (-2.6,-4) {$h^{\mathrm F}$};
+                \node[box] (hr) at (2.6,-4) {$h^{\mathrm R}$ \, (realigned)};
+                \node[hi] (cc) at (0,-6) {$[\,h^{\mathrm F};h^{\mathrm R}\,]$ \quad width $2W$};
+                \node[box] (loc) at (0,-7.6) {local embedding $x$ \quad width $W$};
+
+                \draw[arrow] (emb) -- (fwd);
+                \draw[arrow] (emb) -- (rev);
+                \draw[arrow] (fwd) -- (hf);
+                \draw[arrow] (rev) -- (hr);
+                \draw[arrow] (hf) -- (cc);
+                \draw[arrow] (hr) -- (cc);
+                \draw[arrow,orange,dashed] (emb.west) -- ++(-4.2,0) |- (loc.west);
+              \end{tikzpicture}
+              \end{document}
+            </script>
+          </div>
+        </div>
+      </section>
+
+      <!-- ******************** PRETRAINING OBJECTIVES ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>Pretraining: ask about pairs, never produce a track</h1>
+
+        <p>Every objective asks one question, at a different range:
+          <span class="sstress">do these two hits belong to a common track?</span></p>
+
+        <div class="columnsf dense">
+          <div class="columnnb">
+            <h2><hl>local-association</hl></h2>
+            <ul>
+              <li>For root $i$ and offset $k\le 32$: a logit for the pair $(i,i-k)$.
+                The <em>same head</em> on the swapped, reversed stream gives $(i,i+k)$.</li>
+              <li>$\mathcal{L}=\mathrm{BCE}_{\text{all pairs}}
+                +\lambda\,\mathrm{SmoothL1}\!\left(\hat n_i/\sqrt{V_i},\, n_i/\sqrt{V_i}\right)$</li>
+            </ul>
+            <span class="note">Pair-frequency BCE keeps the sparse prior calibrated; the
+              cardinality term stops a diffuse cloud of half-positive offsets.</span>
+          </div>
+          <div class="columnnb">
+            <h2><hl2>continuation</hl2></h2>
+            <ul>
+              <li>Drop the window. Score forward queries against <em>reverse</em> keys over
+                every candidate on the right side.</li>
+              <li>$s_{ij}=\langle q_i,k_j\rangle/\sqrt{W}$, cross-entropy to the next
+                same-track hits.</li>
+              <li>Queries anchored in the token's own embedding $[\,h^{\mathrm F};x\,]$
+                &mdash; the question stays about <em>this</em> hit.</li>
+            </ul>
+            <span class="note">Crossing the directions is deliberate: the pair covers the
+              whole event between the two hits.</span>
+          </div>
+          <div class="columnnb">
+            <h2><hl3>masked-occupancy</hl3></h2>
+            <ul>
+              <li>The one objective that reads <em>no truth at all</em>.</li>
+              <li>Hide elements from the input, hand them back as candidates carrying
+                geometry; predict which fired.</li>
+              <li>Masking over <em>elements</em>, not hits &mdash; whether an element fired
+                cannot influence whether it is asked about.</li>
+            </ul>
+            <span class="note fragment sstress">This is the route to pretraining on real data.</span>
+          </div>
+        </div>
+
+        <div class="fragment" style="margin-top:10px">
+          A pair is positive whenever the two elements' <hl>ragged</hl> truth-membership sets
+          intersect: a shared element is positive for every track it carries.
+        </div>
+      </section>
+
+      <!-- ******************** TRACK TRANSFORMER ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>From representation to tracks</h1>
+
+        <div class="columnsf dense">
+          <div class="columnnb" style="flex:1.2">
+            <p>Run the frozen backbone <hl>once</hl>. Then emit tracks one at a time: propose
+              a trajectory and a membership, refine both against the geometry, and decide
+              <hl2>REFINE</hl2> / <hl2>EMIT</hl2> / <hl2>STOP</hl2>.</p>
+            <ul>
+              <li>A track is emitted as anchor, direction, curvature &mdash; plus a
+                membership probability for every root hit.</li>
+              <li>Previously emitted tracks are the decoder's own sequence.</li>
+              <li>Each step expands into a <hl>bank of $K$ interacting hypotheses</hl> (4).
+                The bank is proposal capacity, not an output limit &mdash; the number of
+                tracks stays variable.</li>
+            </ul>
+            <h2>Explainedness, not deletion</h2>
+            <p>$e_\ell = 1-\prod_{t \lt \ell}(1-m_t)$ biases cross-attention by
+              $\log\max(1-e_{\ell j},\epsilon)$: a claimed hit is attended to
+              <em>less</em>, never removed. The floor $\epsilon$ keeps a
+              <hl3>wrongly</hl3> claimed hit reachable by a later track.</p>
+          </div>
+          <div class="columnnb">
+            <script style="width:100%" type="text/tikz" alt="Track decoder loop">
+              \begin{document}
+              \usetikzlibrary{arrows.meta,positioning,shapes.geometric}
+              \begin{tikzpicture}[
+                box/.style={rectangle, draw=white, rounded corners, minimum width=5.2cm,
+                            minimum height=0.9cm, font=\sffamily\small, text=white, align=center},
+                dec/.style={rectangle, draw=orange, thick, rounded corners, minimum width=5.2cm,
+                            minimum height=0.9cm, font=\sffamily\small, text=orange, align=center},
+                hi/.style={rectangle, draw=cyan, very thick, rounded corners, minimum width=5.2cm,
+                            minimum height=0.9cm, font=\sffamily\small, text=cyan, align=center},
+                arrow/.style={-{Triangle[width=3mm,length=2.5mm]}, line width=0.7mm, white}
+              ]
+                \node[box] (ev)   at (0, 0.0) {event tokens};
+                \node[hi]  (bb)   at (0,-1.6) {frozen backbone, one pass};
+                \node[box] (dec)  at (0,-3.2) {causal decoder over emitted tracks};
+                \node[box] (bank) at (0,-4.8) {candidate bank, $K$ hypotheses};
+                \node[box] (ref)  at (0,-6.4) {refinement round + geometry oracle};
+                \node[dec] (act)  at (0,-8.0) {REFINE \, / \, EMIT \, / \, STOP};
+                \node[box] (out)  at (0,-10.2) {track state + membership};
+
+                \draw[arrow] (ev)   -- (bb);
+                \draw[arrow] (bb)   -- (dec);
+                \draw[arrow] (dec)  -- (bank);
+                \draw[arrow] (bank) -- (ref);
+                \draw[arrow] (ref)  -- (act);
+                \draw[arrow,cyan] (act) -- node[right=2mm,font=\sffamily\scriptsize,text=cyan] {EMIT} (out);
+
+                % REFINE loops back into the refinement round
+                \draw[arrow,orange] (act.west) -- ++(-1.8,0)
+                      node[midway,above,font=\sffamily\scriptsize,text=orange] {REFINE}
+                      |- (ref.west);
+                % an emitted track becomes the next decoder token
+                \draw[arrow,cyan] (out.east) -- ++(1.8,0) |- (dec.east);
+              \end{tikzpicture}
+              \end{document}
+            </script>
+          </div>
+        </div>
+      </section>
+
+      <!-- ******************** GEOMETRY ORACLE ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>The geometry oracle</h1>
+
+        <div class="columnsf dense">
+          <div class="columnnb">
+            <h2>What it answers</h2>
+            <p>For every candidate track and every hit volume: where does this trajectory
+              <hl>first enter</hl> that volume? Distance, entry point, tangent, arc length.</p>
+            <p class="fragment" style="margin-top:20px"><em>Why first entry, and not
+              "closest point"?</em> Every point inside a volume has the same clamped
+              distance &mdash; so <hl3>ordering</hl3> was deciding the answer. A cached truth
+              point disagreed with the same point recomputed during training on
+              <hl3>a third of all memberships</hl3>. First entry is a property of the
+              trajectory and the volume alone, so closed-form faces, certified subdivision
+              and a sampled scan all report the same thing.</p>
+          </div>
+          <div class="columnnb">
+            <h2>How it enters the network</h2>
+            <ul>
+              <li>An attention gate $-d/T$, plus <hl>17 geometry features</hl> per
+                track&ndash;hit pair</li>
+              <li>The arc-length root search is <em>detached</em>; the distances and the
+                features built from them stay <hl2>differentiable</hl2> &mdash; that is what
+                carries a gradient back into the proposed track</li>
+              <li>Distances are read at <hl>three scales</hl> &mdash; the element's thin
+                dimension, its overall size, a detector scale &mdash; because refinement
+                crosses about three decades in one forward pass</li>
+            </ul>
+            <p class="fragment note">Up to 16 rounds. A reach cutoff, compaction, a gradient
+              horizon every two rounds and activation checkpointing keep that affordable.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ******************** PLAN ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>The plan, and where we are</h1>
+
+        <div class="columnsf dense">
+          <div class="columnnb" style="flex:1.2">
+            <h2>Training sequence</h2>
+            <ol>
+              <li>Generate layout-disjoint mixed-technology datasets with ragged truth
+                &nbsp;<hl>&#10003;</hl></li>
+              <li>Pretrain the backbone; compare local-only, continuation-only and combined
+                on identical batches and seeds &nbsp;<hl>in progress</hl></li>
+              <li>Freeze the best backbone, train the standalone track Transformer
+                &nbsp;<hl2>in progress</hl2></li>
+              <li>Evaluate membership, count, trajectory and detector-family metrics with
+                Hungarian matching</li>
+              <li>Add efficiency and noise; then <hl3>label-free adaptation</hl3> via the
+                oracle set-cover trainer</li>
+              <li>Cross-experiment validation: sPHENIX, DarkLight, MUSE</li>
+            </ol>
+          </div>
+          <div class="columnnb">
+            <h2>What it takes</h2>
+            <ul>
+              <li>2 postdocs, 9 months</li>
+              <li>1 graduate student, 6 months</li>
+              <li>$\sim$70k AI server</li>
+            </ul>
+            <h2>How we work</h2>
+            <ul>
+              <li>Everything documented as it is decided</li>
+              <li>Fork-first, PR, CI-rendered docs site</li>
+              <li>Ablations are configured switches, not branches &mdash;
+                <code>local</code> / <code>mamba</code> / <code>combined</code> memory
+                through the same adapter</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ******************** HONEST STATUS ********************** -->
+      <section data-background-image="images/pipes.png">
+        <h1>What we have learned &mdash; mostly from things that broke</h1>
+
+        <ul class="morespace">
+          <li>An initial-state head can come out <hl>antiparallel to the truth in 57% of
+            tracks</hl> while its <em>distance</em> reads a healthy 9.7 mm &mdash; the
+            distance is invariant under $d\to-d$, so the whole first refinement round goes
+            into turning around. You only see it if you measure the angle.</li>
+          <li>A gradient clip fixed at 0.1, against norms of about a half, fired on
+            <hl2>every single step</hl2>. That is not a guard against a pathological batch;
+            it is a silent division of the learning rate by five.</li>
+          <li>The loss is a <em>mean</em> of distances; the detector's score is a
+            <em>count</em> under a tolerance. On a step-length walk the loss minimizes at
+            0.90 and the on-track fraction peaks at 1.10 &mdash; because one hit in a hundred
+            and eighty goes far out and the uncapped mean is what the objective reads.</li>
+        </ul>
+
+        <div class="fragment sstress" style="margin-top:40px">
+          None of these are visible in a loss curve. All of them were found by instrumenting
+          the loop, and every one is written down.
+        </div>
+      </section>
+
+      <!-- ******************** FURTHER WORK ********************** -->
+      <section data-background-image="images/sparks.jpg">
+        <h1>Further work</h1>
+
+        <div class="columnsf">
+          <div class="columnnb">
+            <h2>Near term</h2>
+            <ul class="morespace">
+              <li><hl>Real detectors.</hl> Take the model trained on the synthetic layout
+                population to sPHENIX, DarkLight and MUSE geometries &mdash; unseen, and with
+                real misalignment and real noise.</li>
+              <li><hl>Pretrain without truth.</hl> Masked occupancy needs no labels, so the
+                pretraining corpus can be <em>recorded data</em>, not simulation.</li>
+              <li><hl>Fine-tune vs. freeze.</hl> How much of a new detector does a frozen
+                backbone plus an adapter actually buy, and where does it stop?</li>
+            </ul>
+          </div>
+          <div class="columnnb">
+            <h2>Beyond tracking</h2>
+            <ul class="morespace">
+              <li>The typed-token stream is not specific to trackers. Calorimeter cells,
+                PID detectors and timing layers are the same kind of object:
+                <em>a volume, a technology, a response</em>.</li>
+              <li>Particle flow, vertexing, PID as further adapters on the same frozen
+                representation.</li>
+              <li>Alignment and calibration: the geometry oracle is differentiable in the
+                geometry too.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ******************** LONG TERM ********************** -->
+      <section data-background-image="images/sparks.jpg">
+        <h1>The long game</h1>
+
+        <div style="margin-top:40px">
+          <h2>1. A detector description is an input, not a code release</h2>
+          <p>Today a new experiment writes a new reconstruction. If geometry travels with the
+            event, standing up tracking for a new detector becomes
+            <hl>describing it</hl> &mdash; and a small experiment gets large-experiment
+            reconstruction on day one.</p>
+        </div>
+
+        <div class="fragment" style="margin-top:40px">
+          <h2>2. Reconstruction that is good enough to run on the stream</h2>
+          <p>A single frozen encoder pass per event, linear in hit count, no quadratic
+            attention. <hl2>This is the connection to this workshop:</hl2> the harder the
+            decision you can afford to make in software, the further you can push what
+            streaming buys you &mdash; and the less you need to decide in firmware.</p>
+        </div>
+
+        <div class="fragment" style="margin-top:40px">
+          <h2>3. Reconstruction that improves without being rewritten</h2>
+          <p>More data, more detectors, more compute &mdash; and scaling laws say the same
+            model gets better, everywhere at once. That is a very different maintenance
+            story from a per-experiment reconstruction stack.</p>
+        </div>
+      </section>
+
+      <!-- ******************** SUMMARY ********************** -->
+      <section data-background-image="images/clouds.png">
+        <h1>Summary</h1>
+
+        <ul class="morespace" style="margin-top:60px">
+          <li><hl>FM4NPP</hl> showed that a foundation model for detector data scales, and
+            that a frozen backbone with a tiny adapter beats purpose-built networks and the
+            production reconstruction chain.</li>
+          <li>It spawned <hl>three Genesis Mission projects</hl>. Ours asks whether the model
+            can leave the detector it was trained on.</li>
+          <li><hl2>TPTNP</hl2>: geometry travels with the event as typed tokens; a shared
+            bidirectional Mamba-2 stack encodes it once; an autoregressive decoder emits a
+            variable number of tracks, refined against a differentiable geometry oracle.
+            Trained on a <hl>population of detectors</hl>, validated on layouts it has
+            never seen.</li>
+          <li>If it works: standing up tracking for a new experiment becomes
+            <hl3>describing the detector</hl3>.</li>
+        </ul>
+
+        <div style="margin-top:40px;text-align:center">
+          <span class="sstress">Thank you.</span>
+        </div>
+
+        <div class="support">
+          FM4NPP: arXiv:2508.14087 &nbsp;&middot;&nbsp; TPTNP is supported by the DOE Genesis Mission.
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="reveal.js"></script>
+  <script src="highlight.js"></script>
+  <script>
+    window.resizeTo(1920, 1200);
+
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.initialize({
+      hash: true,
+      width: 1920,
+      height: 1200,
+      margin: 0.04,
+      slideNumber: false,
+      controls: false,
+      progress: false,
+      transition: "fade",
+      center: false,
+      preloadIframes: true,
+      viewdistance: 30,
+      backgroundTransition: "fade",
+      // Learn about plugins: https://revealjs.com/plugins/
+      plugins: [
+        RevealMarkdown,
+        RevealHighlight,
+        RevealNotes,
+        RevealMath.KaTeX,
+      ],
+    });
+    Reveal.addEventListener("slidechanged", (event) => {
+      const isSnOn = event.currentSlide.dataset.hideSlideNumber !== "true";
+      Reveal.configure({ slideNumber: isSnOn });
+    });
+  </script>
+</body>
+
+</html>

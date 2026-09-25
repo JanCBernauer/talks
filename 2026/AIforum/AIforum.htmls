@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <title>AI forum</title>
+
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="reveal.css" />
+  <link rel="stylesheet" href="black.css" />
+
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href="monokai.css" />
+  <link rel="stylesheet" href="mystyle.css" />
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <!-- ******************** TITLE SLIDE ********************** -->
+      <section data-hide-slide-number="true" data-background-image="images/clouds.png"
+        data-transition="zoom">
+        <h1 style="text-shadow: 5px 5px 10px black; margin-top:200px">
+          AI forum: Research group Bernauer
+        </h1>
+        
+        <div style="margin-bottom: 100px">July 16th, 2026</div>
+        <center>
+          <img style="height: 250px; vertical-align: -100px; margin-right: 100px"
+            src="images/cfns_logo_2018.png" />
+          <img style="height: 300px; vertical-align: -150px; margin-right: 100px"
+            src="images/SBUlogo.png" />
+        </center>
+
+        
+      </section>
+
+      
+      
+
+      <section data-background-image="images/puzzle.jpg">
+        <h1>What we do/have</h1>
+        <div>
+        <h2>MUSE</h2>
+        <ul>
+            <li>Beam line Calorimeter reconstruction:  CNN + BDTs</li>
+            <li>Straw Tube tracking/seeding: GNN (beginning)    </li>
+        </ul>
+        </div>
+        <div>
+        <h2>DarkLight</h2>
+        <ul>
+            <li>Focal-plane to target transfer: DNN, BDTs</li>
+            <li>Direct GEM ADC to target: DNN $\rightarrow$ out-perfoms traditional methods</li>
+        </ul>
+        </div>
+        <div>
+        <h2>MLLM: Machine Learning Learning Machine</h2>
+        <ul>
+            <li>Postdoc-initiated CFNS/HEP "journal club"</li>
+            <li>Good for exchange of ideas, getting into AI</li>
+        </ul>
+        </div>
+        <div>
+        <h2>Existing hardware</h2>
+        <ul>
+            <li>Storage + Compute server with ca 100TB disks, 5090</li>            
+        </ul>
+        </div>
+     </section>
+
+  
+ <section data-background-image="images/puzzle.jpg">
+        <h1>What we are planning to do</h1>
+        <div>
+        <h2>Foundation Models for Transferable Particle Tracking</h2>
+        <ul>
+            <li>A model that <hl>understands</hl> tracks</li>
+            <li>Based on FM4NPP </li>
+            <li>Multi-modal: Different detector types with different information content</li>
+            <li>Multi-experiment: Different geometries. Here: sPHENIX, DarkLight, MUSE (Seaquest)</li>
+            <li>Raw detector information: Avoid information loss in hit building</li>
+        </ul>
+        <h3> Tasks</h3>
+        <ul>
+            <li>Data preparation and ingestion</li>
+            <li>Model architecture development</li>
+            <li>Training and scaling studies</li>
+            <li>Cross-experiment validation and deployment</li>
+        </ul>
+           <h3> Support</h3>
+        <ul>
+            <li>2 postdocs for 9 month</li>
+            <li>6 month graduate student</li>
+            <li>Ca 70k for AI server</li>
+            
+        </ul>
+        <div>
+            (SBU: JCB (Lead Pi), Axel; Argonne: Paul Reimer; BNL: Yeonju G, Yi Huang)
+        </div>
+        </div>
+        
+    </section>
+
+  
+ <section data-background-image="images/puzzle.jpg">
+        <h1>Some thoughts on department hardware</h1>
+        <div>
+        <h2>Three stages of scale</h2>
+        <ol>
+            <li>Laptop / normal PC: $\rightarrow$ Consumer-level GPU</li>
+            <li>Single compute server: $\rightarrow$ 1 to few professional GPUs</li>
+            <li>Distributed: $\rightarrow$ Multi-Node with multi-GPUs</li>            
+        </ol>
+        <h2>Three stages of development</h2>
+        <ol>
+            <li>Prototyping: 1-2</li>
+            <li>Scale up tests: 2</li>
+            <li>Full run: 2-3</li>            
+        </ol>
+        <div style="margin-top:30px">
+        <hl>Most of us have 1.</hl> <hl2>Clusters/HPC are available for 3.</hl2> <hl3>2 is the bottleneck.</hl3>
+</div>
+<div style="margin-top:30px">
+        <em>But we need not only compute, we also need storage!</em>
+       
+</div>
+<div style="margin-top:30px">
+    Per project: Compute is short-term peaky, but storage is long-term. Moving data is slow. 
+</div>
+    </section>
+
+
+      
+
+    </div>
+  </div>
+
+  <script src="reveal.js"></script>
+  <script src="highlight.js"></script>
+  <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.2.2.min.js"></script>
+  <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-widgets-3.2.2.min.js"></script>
+  <script type="text/javascript">
+    Bokeh.set_log_level("info");
+  </script>
+  <script>
+    window.resizeTo(1920, 1200);
+
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.initialize({
+      hash: true,
+      width: 1920,
+      height: 1200,
+      margin: 0.04,
+      slideNumber: false,
+      controls: false,
+      progress: false,
+      transition: "fade",
+      center: false,
+      preloadIframes: true,
+      viewdistance: 30,
+      backgroundTransition: "fade",
+      // Learn about plugins: https://revealjs.com/plugins/
+      plugins: [
+        RevealMarkdown,
+        RevealHighlight,
+        RevealNotes,
+        RevealMath.KaTeX,
+      ],
+    });
+    Reveal.addEventListener("slidechanged", (event) => {
+      const isSnOn = event.currentSlide.dataset.hideSlideNumber !== "true";
+      Reveal.configure({ slideNumber: isSnOn });
+    });
+  </script>
+</body>
+
+</html>
